@@ -13,9 +13,19 @@ Este repositorio contiene la entrega de la **Tarea 3**, orientada a los principi
 
 1. Abra el archivo [`index.html`](index.html) en cualquier navegador web (Chrome, Firefox, Safari, Edge, etc.).
 2. Puede hacer doble clic sobre el archivo o arrastrarlo a una ventana del navegador.
-3. No se requiere servidor, instalación de programas ni conexión a internet: todo el contenido está en un solo archivo.
+3. No se requiere servidor ni instalación de programas. La visualización funciona sin internet; la **descarga automática de PDF** requiere conexión la primera vez (carga la librería html2pdf.js). Sin internet, el botón abre el diálogo de impresión para guardar como PDF.
 
 Al abrir la página verá la línea de tiempo, podrá hacer clic en cada hito para ampliar la información y, al final, consultar una tabla comparativa de ambos enfoques.
+
+### Descargar PDF
+
+En la parte superior de la página hay un botón **Descargar PDF** que exporta la línea de tiempo **completa** (los 12 hitos con su texto ampliado y la tabla comparativa).
+
+1. Haga clic en **Descargar PDF**.
+2. Si hay conexión a internet, el navegador generará y descargará automáticamente el archivo `linea-de-tiempo-jung-perls-tarea3.pdf`.
+3. Si no hay conexión o falla la descarga automática, se abrirá el **diálogo de impresión** del navegador: elija **Guardar como PDF** como destino y confirme.
+
+La exportación expande temporalmente todos los hitos para incluir el detalle completo en el documento.
 
 ---
 
@@ -81,6 +91,7 @@ Al cierre de la página se incluye una tabla que contrasta ambos enfoques en est
 
 - Cada hito se muestra como una **tarjeta** con un resumen breve visible de inmediato.
 - Al **hacer clic** en la tarjeta (o activarla con teclado), se despliega un **detalle ampliado** con mayor profundidad conceptual o biográfica.
+- El botón **Descargar PDF** genera un documento con todo el contenido expandido (ver sección anterior).
 - La línea de tiempo usa un diseño **vertical**: los hitos de Jung aparecen a la izquierda, los de los Perls a la derecha, y los hitos compartidos quedan **centrados**.
 - En pantallas pequeñas (móvil), el diseño se adapta a **una sola columna** para facilitar la lectura.
 

@@ -348,6 +348,71 @@
     .compare-table td:first-child { width: 28%; }
   }
 
+  /* ── Botón descargar PDF ── */
+  .header-actions {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  .btn-pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: inherit;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--col-jung-border);
+    background: var(--col-jung-bg);
+    color: var(--col-jung-dark);
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+  .btn-pdf:hover { box-shadow: 0 2px 8px rgba(55, 48, 163, 0.12); }
+  .btn-pdf:focus-visible { outline-color: var(--col-jung); }
+  .btn-pdf:disabled { opacity: 0.65; cursor: wait; }
+  .btn-pdf svg { flex-shrink: 0; }
+
+  /* ── Impresión / Guardar como PDF ── */
+  @media print {
+    body { padding: 0; background: white; font-size: 11pt; }
+    .page { max-width: 100%; }
+    .hint, .card-expand, .header-actions { display: none !important; }
+    .card {
+      cursor: default;
+      box-shadow: none !important;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .card-detail { display: block !important; }
+    .timeline::before { left: 20px; }
+    .hito {
+      grid-template-columns: 40px 1fr;
+      gap: 0 0.75rem;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .year { grid-column: 1; grid-row: 1; padding-top: 0.5rem; justify-content: flex-start; }
+    .hito-jung .card, .hito-perls .card, .hito-shared .card {
+      grid-column: 2; grid-row: 1;
+      width: 100%; max-width: none;
+      border-left: 4px solid;
+      border-right: 1px solid var(--col-border);
+    }
+    .hito-jung  .card { border-left-color: var(--col-jung); }
+    .hito-perls .card { border-left-color: var(--col-perls); }
+    .hito-shared { grid-template-columns: 40px 1fr; }
+    .hito-shared .year { grid-column: 1; }
+    .hito-shared .card { border-left-color: var(--col-shared); }
+    .compare-section { break-before: page; page-break-before: always; }
+    .compare-table { font-size: 9pt; }
+    .footer { color: #374151; }
+    @page { margin: 1.5cm; size: A4; }
+  }
+
   /* ── Focus visible global ── */
   :focus-visible { outline: 3px solid #3730A3; outline-offset: 2px; }
 </style>
@@ -361,6 +426,15 @@
     <div class="header-tag">UNAD · Enfoques Clásicos de la Psicología · Tarea 3</div>
     <h1>Línea de tiempo comparativa</h1>
     <p>Carl Jung — Psicoanálisis Analítico &nbsp;·&nbsp; Fritz &amp; Laura Perls — Terapia Gestalt</p>
+    <div class="header-actions">
+      <button type="button" class="btn-pdf" id="btn-pdf" onclick="downloadPDF()" title="Genera un PDF con todos los hitos expandidos y la tabla comparativa">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M8 1v9M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 12v2h12v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Descargar PDF
+      </button>
+    </div>
   </header>
 
   <!-- Leyenda -->
@@ -624,10 +698,88 @@
 </div><!-- /.page -->
 
 <script>
+  const PDF_FILENAME = 'linea-de-tiempo-jung-perls-tarea3.pdf';
+  const HTML2PDF_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+
+  let cardStateBeforeExport = [];
+
   function toggle(card) {
     const isOpen = card.classList.contains('open');
     card.classList.toggle('open', !isOpen);
     card.setAttribute('aria-expanded', String(!isOpen));
+  }
+
+  function setAllCardsExpanded(expanded) {
+    document.querySelectorAll('.card').forEach((card) => {
+      card.classList.toggle('open', expanded);
+      card.setAttribute('aria-expanded', String(expanded));
+    });
+  }
+
+  function rememberAndExpandCards() {
+    cardStateBeforeExport = [];
+    document.querySelectorAll('.card').forEach((card, index) => {
+      cardStateBeforeExport[index] = card.classList.contains('open');
+    });
+    setAllCardsExpanded(true);
+  }
+
+  function restoreCards() {
+    document.querySelectorAll('.card').forEach((card, index) => {
+      const wasOpen = cardStateBeforeExport[index];
+      card.classList.toggle('open', wasOpen);
+      card.setAttribute('aria-expanded', String(wasOpen));
+    });
+    cardStateBeforeExport = [];
+  }
+
+  function loadHtml2Pdf() {
+    if (window.html2pdf) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = HTML2PDF_CDN;
+      script.crossOrigin = 'anonymous';
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('No se pudo cargar html2pdf.js'));
+      document.head.appendChild(script);
+    });
+  }
+
+  async function downloadWithHtml2Pdf() {
+    const page = document.querySelector('.page');
+    const opt = {
+      margin: [12, 12, 12, 12],
+      filename: PDF_FILENAME,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['.hito', '.compare-section'] },
+    };
+    await html2pdf().set(opt).from(page).save();
+  }
+
+  async function downloadPDF() {
+    const btn = document.getElementById('btn-pdf');
+    const label = btn.innerHTML;
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
+
+    rememberAndExpandCards();
+    let usePrintFallback = false;
+
+    try {
+      await loadHtml2Pdf();
+      await downloadWithHtml2Pdf();
+    } catch {
+      usePrintFallback = true;
+      window.addEventListener('afterprint', () => restoreCards(), { once: true });
+      window.print();
+    } finally {
+      btn.disabled = false;
+      btn.removeAttribute('aria-busy');
+      btn.innerHTML = label;
+      if (!usePrintFallback) restoreCards();
+    }
   }
 </script>
 
