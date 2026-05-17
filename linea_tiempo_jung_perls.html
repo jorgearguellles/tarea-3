@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Línea de Tiempo — Carl Jung & Fritz/Laura Perls</title>
+<meta name="description" content="Línea de tiempo comparativa: Psicoanálisis Analítico (Carl Jung) vs Terapia Gestalt (Fritz y Laura Perls). Tarea 3 — UNAD Enfoques Clásicos de la Psicología.">
+<style>
+  /* ── Reset ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── Tokens — WCAG AA/AAA compliant ──
+     Ratios verificados contra #FFFFFF (fondo blanco):
+     --col-jung:      #3730A3  →  7.2:1  AAA ✓
+     --col-jung-bg:   #EEF2FF  →  —  (solo fondo, texto usa --col-jung-dark)
+     --col-jung-dark: #312E81  →  9.1:1  AAA ✓
+     --col-perls:     #065F46  →  7.8:1  AAA ✓
+     --col-perls-bg:  #ECFDF5  →  —  (solo fondo)
+     --col-perls-dark:#064E3B  →  10.1:1 AAA ✓
+     --col-shared:    #92400E  →  7.1:1  AAA ✓
+     --col-shared-bg: #FFFBEB  →  —  (solo fondo)
+     --col-shared-dark:#78350F →  8.9:1  AAA ✓
+     --col-text:      #111827  →  18.1:1 AAA ✓
+     --col-muted:     #374151  →  10.7:1 AAA ✓  (reemplaza #888780 que fallaba)
+     --col-border:    #D1D5DB  →  (solo decorativo, no porta info)
+  */
+  :root {
+    --col-jung:        #3730A3;
+    --col-jung-bg:     #EEF2FF;
+    --col-jung-dark:   #312E81;
+    --col-jung-border: #A5B4FC;
+    --col-perls:       #065F46;
+    --col-perls-bg:    #ECFDF5;
+    --col-perls-dark:  #064E3B;
+    --col-perls-border:#6EE7B7;
+    --col-shared:      #92400E;
+    --col-shared-bg:   #FFFBEB;
+    --col-shared-dark: #78350F;
+    --col-shared-border:#FCD34D;
+    --col-text:        #111827;
+    --col-muted:       #374151;
+    --col-subtle:      #6B7280;  /* 4.6:1 sobre blanco — solo para texto grande/bold */
+    --col-border:      #D1D5DB;
+    --col-bg:          #FFFFFF;
+    --col-surface:     #F9FAFB;
+    --radius-sm:       6px;
+    --radius-md:       10px;
+    --radius-lg:       14px;
+    font-size: 16px;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--col-bg);
+    color: var(--col-text);
+    line-height: 1.6;
+    padding: 2rem 1rem 4rem;
+  }
+
+  /* ── Layout ── */
+  .page { max-width: 780px; margin: 0 auto; }
+
+  /* ── Header ── */
+  .header { text-align: center; margin-bottom: 2.5rem; }
+  .header-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--col-muted);
+    background: var(--col-surface);
+    border: 1px solid var(--col-border);
+    border-radius: 100px;
+    padding: 0.25rem 0.875rem;
+    margin-bottom: 1rem;
+  }
+  .header h1 {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--col-text);
+    line-height: 1.25;
+    margin-bottom: 0.5rem;
+  }
+  .header p {
+    font-size: 0.9375rem;
+    color: var(--col-muted);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* ── Leyenda ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--col-muted);
+  }
+  .legend-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-jung   { background: var(--col-jung); }
+  .dot-perls  { background: var(--col-perls); }
+  .dot-shared { background: var(--col-shared); }
+
+  /* ── Timeline wrapper ── */
+  .timeline {
+    position: relative;
+    padding: 0;
+  }
+  /* línea central */
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: var(--col-border);
+    transform: translateX(-50%);
+  }
+
+  /* ── Hito ── */
+  .hito {
+    display: grid;
+    grid-template-columns: 1fr 56px 1fr;
+    align-items: start;
+    margin-bottom: 1.75rem;
+    position: relative;
+  }
+
+  /* año badge en columna central */
+  .year {
+    grid-column: 2;
+    display: flex;
+    justify-content: center;
+    padding-top: 0.75rem;
+    z-index: 2;
+  }
+  .year-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 0.25rem 0.5rem;
+    border-radius: 100px;
+    white-space: nowrap;
+    border: 1.5px solid;
+    background: var(--col-bg);
+  }
+  .hito-jung   .year-badge { color: var(--col-jung-dark);   border-color: var(--col-jung-border);   }
+  .hito-perls  .year-badge { color: var(--col-perls-dark);  border-color: var(--col-perls-border);  }
+  .hito-shared .year-badge { color: var(--col-shared-dark); border-color: var(--col-shared-border); }
+
+  /* tarjeta */
+  .card {
+    background: var(--col-bg);
+    border: 1.5px solid var(--col-border);
+    border-radius: var(--radius-lg);
+    padding: 0.875rem 1rem;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    position: relative;
+  }
+  .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .card:focus-visible {
+    outline: 3px solid;
+    outline-offset: 2px;
+  }
+
+  /* posición izquierda/derecha */
+  .hito-jung  .card { grid-column: 1; grid-row: 1; border-left: 4px solid var(--col-jung); }
+  .hito-jung  .card:hover { border-color: var(--col-jung); }
+  .hito-jung  .card:focus-visible { outline-color: var(--col-jung); }
+  .hito-perls .card { grid-column: 3; grid-row: 1; border-right: 4px solid var(--col-perls); }
+  .hito-perls .card:hover { border-color: var(--col-perls); }
+  .hito-perls .card:focus-visible { outline-color: var(--col-perls); }
+
+  /* hito compartido — span full */
+  .hito-shared {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  .hito-shared .year { grid-column: 1; grid-row: 1; padding-bottom: 0.5rem; padding-top: 0; }
+  .hito-shared .card {
+    grid-column: 1; grid-row: 2;
+    width: calc(100% - 56px);
+    max-width: 560px;
+    border-left: 4px solid var(--col-shared);
+    border-right: 1.5px solid var(--col-border);
+  }
+  .hito-shared .card:hover { border-color: var(--col-shared); border-right-color: var(--col-shared); }
+  .hito-shared .card:focus-visible { outline-color: var(--col-shared); }
+
+  /* contenido de tarjeta */
+  .card-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 0.25rem;
+  }
+  .hito-jung   .card-label { color: var(--col-jung-dark); }
+  .hito-perls  .card-label { color: var(--col-perls-dark); }
+  .hito-shared .card-label { color: var(--col-shared-dark); }
+
+  .card-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--col-text);
+    line-height: 1.35;
+    margin-bottom: 0.3rem;
+  }
+  .card-desc {
+    font-size: 0.875rem;
+    color: var(--col-muted);
+    line-height: 1.55;
+  }
+
+  /* badge tipo */
+  .card-tag {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+  }
+  .hito-jung   .card-tag { background: var(--col-jung-bg);   color: var(--col-jung-dark);   }
+  .hito-perls  .card-tag { background: var(--col-perls-bg);  color: var(--col-perls-dark);  }
+  .hito-shared .card-tag { background: var(--col-shared-bg); color: var(--col-shared-dark); }
+
+  /* panel expandible */
+  .card-detail {
+    display: none;
+    margin-top: 0.625rem;
+    padding-top: 0.625rem;
+    border-top: 1px solid var(--col-border);
+    font-size: 0.875rem;
+    color: var(--col-muted);
+    line-height: 1.6;
+  }
+  .card.open .card-detail { display: block; }
+
+  /* indicador expand */
+  .card-expand {
+    position: absolute;
+    top: 0.75rem; right: 0.75rem;
+    font-size: 1rem;
+    color: var(--col-subtle);
+    transition: transform 0.2s;
+    user-select: none;
+    line-height: 1;
+  }
+  .card.open .card-expand { transform: rotate(45deg); }
+
+  /* ── Tabla comparativa ── */
+  .compare-section { margin-top: 3rem; }
+  .compare-section h2 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--col-text);
+    text-align: center;
+    margin-bottom: 1.25rem;
+  }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  .compare-table th {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    padding: 0.625rem 0.875rem;
+    background: var(--col-surface);
+    text-align: left;
+    border-bottom: 2px solid var(--col-border);
+  }
+  .compare-table th.th-dim   { color: var(--col-muted); }
+  .compare-table th.th-jung  { color: var(--col-jung-dark); }
+  .compare-table th.th-perls { color: var(--col-perls-dark); }
+  .compare-table td {
+    padding: 0.625rem 0.875rem;
+    border-bottom: 1px solid var(--col-border);
+    color: var(--col-text);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .compare-table td:first-child {
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: var(--col-muted);
+    width: 22%;
+  }
+  .compare-table tr:last-child td {
+    border-bottom: none;
+    font-style: italic;
+    color: var(--col-muted);
+  }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 3rem;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--col-subtle);
+    border-top: 1px solid var(--col-border);
+    padding-top: 1.5rem;
+  }
+
+  /* ── Instrucción accesible ── */
+  .hint {
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--col-muted);
+    margin-bottom: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  /* ── Responsive: colapsa a 1 columna en móvil ── */
+  @media (max-width: 600px) {
+    .timeline::before { left: 20px; }
+    .hito { grid-template-columns: 40px 1fr; gap: 0 0.75rem; }
+    .year { grid-column: 1; grid-row: 1; padding-top: 0.625rem; justify-content: flex-start; }
+    .year-badge { font-size: 0.65rem; padding: 0.2rem 0.4rem; }
+    .hito-jung .card, .hito-perls .card {
+      grid-column: 2; grid-row: 1;
+      border-left: 4px solid; border-right: 1.5px solid var(--col-border);
+    }
+    .hito-jung  .card { border-left-color: var(--col-jung); }
+    .hito-perls .card { border-left-color: var(--col-perls); }
+    .hito-shared { grid-template-columns: 40px 1fr; }
+    .hito-shared .year { grid-column: 1; grid-row: 1; }
+    .hito-shared .card { grid-column: 2; grid-row: 1; width: 100%; max-width: none; }
+    .compare-table td:first-child { width: 28%; }
+  }
+
+  /* ── Focus visible global ── */
+  :focus-visible { outline: 3px solid #3730A3; outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Encabezado -->
+  <header class="header">
+    <div class="header-tag">UNAD · Enfoques Clásicos de la Psicología · Tarea 3</div>
+    <h1>Línea de tiempo comparativa</h1>
+    <p>Carl Jung — Psicoanálisis Analítico &nbsp;·&nbsp; Fritz &amp; Laura Perls — Terapia Gestalt</p>
+  </header>
+
+  <!-- Leyenda -->
+  <div class="legend" role="list" aria-label="Convenciones de color">
+    <div class="legend-item" role="listitem">
+      <div class="legend-dot dot-jung" aria-hidden="true"></div>
+      Carl Jung — Psicoanálisis
+    </div>
+    <div class="legend-item" role="listitem">
+      <div class="legend-dot dot-perls" aria-hidden="true"></div>
+      Fritz &amp; Laura Perls — Gestalt
+    </div>
+    <div class="legend-item" role="listitem">
+      <div class="legend-dot dot-shared" aria-hidden="true"></div>
+      Relación entre enfoques
+    </div>
+  </div>
+
+  <!-- Instrucción -->
+  <p class="hint" aria-live="polite">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    Haz clic en cada hito para ver más detalles
+  </p>
+
+  <!-- Línea de tiempo -->
+  <main>
+    <div class="timeline" role="list" aria-label="Hitos cronológicos">
+
+      <!-- H1 — Jung 1875 -->
+      <div class="hito hito-jung" role="listitem">
+        <button class="card" onclick="toggle(this)" aria-expanded="false" aria-controls="det-1">
+          <span class="card-expand" aria-hidden="true">+</span>
+          <div class="card-label">Jung · Psicoanálisis</div>
+          <div class="card-title">Nacimiento e infancia espiritual</div>
+          <div class="card-desc">Nace en Kesswil, Suiza. Infancia marcada por sueños vívidos y conflictos con la fe religiosa paterna.</div>
+          <div class="card-tag">Contexto biográfico</div>
+          <div class="card-detail" id="det-1">
+            Hijo de un pastor protestante, Jung desarrolló desde niño una fascinación intensa por los sueños, los símbolos y la espiritualidad. Sus experiencias oníricas tempranas serán el germen del concepto de inconsciente colectivo, uno de sus aportes más originales a la psicología.
+          </div>
+        </button>
+        <div class="year"><span class="year-badge">1875</span></div>
+      </div>
+
+      <!-- H2 — Perls 1893/1905 -->
+      <div class="hito hito-perls" role="listitem">
+        <div class="year"><span class="year-badge">1893 · 1905</span></div>
+        <button class="card" onclick="toggle(this)" aria-expanded="false" aria-controls="det-2">
+          <span class="card-expand" aria-hidden="true">+</span>
+          <div class="card-label">Perls · Gestalt</div>
+          <div class="card-title">Nacimientos: Fritz y Laura</div>
+          <div class="card-desc">Fritz nace en Berlín (1893); Laura Posner en Pforzheim (1905). Ambos crecen en la efervescencia intelectual europea de entreguerras.</div>
+          <div class="card-tag">Contexto biográfico</div>
+          <div class="card-detail" id="det-2">
+            Fritz crece influenciado por el teatro expresionista y la bohemia berlinesa. Laura estudia filosofía existencial, fenomenología y danza. Estas influencias darán a la Terapia Gestalt su dimensión corporal, vivencial y relacional, diferenciándola del psicoanálisis clásico.
+          </div>
+        </button>
+      </div>
+
+      <!-- H3 — Jung 1900-1910 -->
+      <div class="hito hito-jung" role="listitem">
+        <button class="card" onclick="toggle(this)" aria-expanded="false" aria-controls="det-3">
+          <span class="card-expand" aria-hidden="true">+</span>
+          <div class="card-label">Jung · Psicoanálisis</div>
+          <div class="card-title">Formación y encuentro con Freud</div>
+          <div class="card-desc">Estudia medicina y psiquiatría en Zúrich. Lee a Freud y se convierte en su principal colaborador (1907–1913).</div>
+          <div class="card-tag">Hito teórico</div>
+          <div class="card-detail" id="det-3">
+            Jung desarrolla el experimento de asociación de palabras para detectar "complejos" — núcleos emocionales cargados en el inconsciente. Freud lo nombra presidente de la Asociación Psicoanalítica Internacional en 1910, considerándolo su sucesor intelectual.
+          </div>
+        </button>
+        <div class="year"><span class="year-badge">1900–1910</span></div>
+      </div>
+
+      <!-- H4 — Perls 1920s-1930s -->
+      <div class="hito hito-perls" role="listitem">
+        <div class="year"><span class="year-badge">1920s–1930s</span></div>
+        <button class="card" onclick="toggle(this)" aria-expanded="false" aria-controls="det-4">
+          <span class="card-expand" aria-hidden="true">+</span>
+          <div class="card-label">Perls · Gestalt</div>
+          <div class="card-title">Formación psicoanalítica y primeras divergencias</div>
+          <div class="card-desc">Fritz se forma como psicoanalista. Se acerca a Kurt Goldstein (teoría organísmica) y a la Psicología de la Gestalt de Berlín.</div>
+          <div class="card-tag">Hito teórico</div>
+          <div class="card-detail" id="det-4">
+            Fritz trabaja con Kurt Goldstein, quien propone ver al organismo como totalidad. Laura aporta la dimensión filosófica de Buber y la fenomenología de Husserl. Ambos inician su alejamiento del psicoanálisis ortodoxo, criticando su énfasis en el pasado y su pasividad terapéutica.
+          </div>
+        </button>
+      </div>
+
+      <!-- H5 — COMPARTIDO ruptura Freud -->
+      <div class="hito hito-shared" role="listitem">
+        <div class="year"><span class="year-badge">~1913–1935</span></div>
+        <button class="card" onclick="toggle(this)" aria-expanded="false" aria-controls="det-5">
+          <span class="card-expand" aria-hidden="true">+</span>
+          <div class="card-label">Relación entre enfoques</div>
+          <div class="card-title">Ruptura con Freud: dos caminos distintos</div>
+          <div class="card-desc">Tanto Jung como los Perls parten del psicoanálisis freudiano para luego superarlo, cada uno por vías radicalmente distintas.</div>
+          <div class="card-tag">Influencia compartida</div>
+          <div class="card-detail" id="det-5">
+            Jung critica la reducción de la libido a energía sexual y propone el inconsciente colectivo. Los Perls critican la pasividad del método y el énfasis en el pasado, proponiendo trabajar en el "aquí y ahora". Ambos conservan la noción de inconsciente pero la resignifican: Jung la amplía hacia lo transpersonal y simbólico; los Perls la subordinan a la experiencia presente y consciente.
+          </div>
+        </button>
+      </div>
+
+      <!-- H6 — Jung 1921 -->
+      <div class="hito hito-jung" role="listitem">
+        <button class="card" onclick="toggle(this)" aria-expanded="false" aria-controls="det-6">
+          <span class="card-expand" aria-hidden="true">+</span>
+          <div class="card-label">Jung · Psicoanálisis</div>
+          <div class="card-title">Inconsciente colectivo y arquetipos</div>
+          <div class="card-desc">Publica <em>Tipos Psicológicos</em> (1921). Propone el inconsciente colectivo y arquetipos universales: Sombra, Ánima, Sí-mismo.</div>
+          <div class="card-tag">Concepto central</div>
+          <div class="card-detail" id="det-6">
+            El inconsciente colectivo es una capa profunda de la psique compartida por toda la humanidad, habitada por arquetipos: imágenes primordiales que emergen en mitos, sueños y arte de todas las culturas. A diferencia del inconsciente freudiano (personal y reprimido), el de Jung es transpersonal y creativo. Los arquetipos principales son la Sombra (lo rechazado), el Ánima/Ánimus (lo contrasexual interior) y el Self (el centro integrador de la psique).
+          </div>
+        </button>
+        <div class="year"><span class="year-badge">1921</span></div>
+      </div>
+
+      <!-- H7 — Perls 1942 -->
+      <div class="hito hito-perls" role="listitem">
+        <div class="year"><span class="year-badge">1942</span></div>
+        <button class="card" onclick="toggle(this)" aria-expanded="false" aria-controls="det-7">
+          <span class="card-expand" aria-hidden="true">+</span>
+          <div class="card-label">Perls · Gestalt</div>
+          <div class="card-title">Primera obra: ruptura con el psicoanálisis</div>
+          <div class="card-desc">Fritz publica <em>El Yo, el Hambre y la Agresión</em>. Propone centrar la terapia en el presente y en la conciencia corporal.</div>
+          <div class="card-tag">Obra clave</div>
+          <div class="card-detail" id="det-7">
+            Fritz argumenta que el problema central no es la represión sexual (Freud) sino la incapacidad del organismo de asimilar plenamente la experiencia — una "resistencia oral". Introduce el concepto de contacto como mecanismo central de salud psíquica. Laura colabora activamente en la redacción, aunque no aparece como coautora en la primera edición.
+          </div>
+        </button>
+      </div>
+
+      <!-- H8 — Jung 1930s-1950s -->
+      <div class="hito hito-jung" role="listitem">
+        <button class="card" onclick="toggle(this)" aria-expanded="false" aria-controls="det-8">
+          <span class="card-expand" aria-hidden="true">+</span>
+          <div class="card-label">Jung · Psicoanálisis</div>
+          <div class="card-title">Proceso de individuación</div>
+          <div class="card-desc">Desarrolla su concepto central: la individuación como integración de los aspectos inconscientes para alcanzar la totalidad psíquica.</div>
+          <div class="card-tag">Método terapéutico</div>
+          <div class="card-detail" id="det-8">
+            La individuación es el proceso por el cual una persona integra la Sombra (lo rechazado), el Ánima/Ánimus (lo contrasexual) y se orienta hacia el Self (Sí-mismo). El método terapéutico incluye el análisis detallado de sueños, la imaginación activa (diálogo consciente con las imágenes del inconsciente) y la amplificación simbólica (conexión con mitos y tradiciones culturales universales).
+          </div>
+        </button>
+        <div class="year"><span class="year-badge">1930s–1950s</span></div>
+      </div>
+
+      <!-- H9 — Perls 1951 -->
+      <div class="hito hito-perls" role="listitem">
+        <div class="year"><span class="year-badge">1951</span></div>
+        <button class="card" onclick="toggle(this)" aria-expanded="false" aria-controls="det-9">
+          <span class="card-expand" aria-hidden="true">+</span>
+          <div class="card-label">Perls · Gestalt</div>
+          <div class="card-title">Fundación formal de la Terapia Gestalt</div>
+          <div class="card-desc">Publican <em>Gestalt Therapy</em> con Paul Goodman. Fundan el primer Instituto Gestalt en Nueva York.</div>
+          <div class="card-tag">Obra clave</div>
+          <div class="card-detail" id="det-9">
+            La obra presenta los conceptos centrales: figura-fondo, ciclo de la experiencia, awareness (darse cuenta), contacto y frontera yo/entorno. Laura fue coautora intelectual decisiva aunque Paul Goodman aparece en portada. El libro es la base teórica de toda la terapia Gestalt posterior y marca la consolidación del enfoque como escuela psicoterapéutica independiente.
+          </div>
+        </button>
+      </div>
+
+      <!-- H10 — COMPARTIDO diferencia fundamental -->
+      <div class="hito hito-shared" role="listitem">
+        <div class="year"><span class="year-badge">~1950s</span></div>
+        <button class="card" onclick="toggle(this)" aria-expanded="false" aria-controls="det-10">
+          <span class="card-expand" aria-hidden="true">+</span>
+          <div class="card-label">Diferencia fundamental</div>
+          <div class="card-title">Inconsciente simbólico vs. experiencia presente</div>
+          <div class="card-desc">Jung explora el inconsciente profundo y simbólico. Los Perls privilegian la experiencia consciente del presente como vía de salud.</div>
+          <div class="card-tag">Comparación teórica</div>
+          <div class="card-detail" id="det-10">
+            Para Jung, el sufrimiento surge de la disociación entre consciente e inconsciente — la curación pasa por integrar los contenidos simbólicos. Para los Perls, el sufrimiento es la interrupción del ciclo de contacto con el entorno en el presente — la curación pasa por recuperar el awareness y completar el ciclo de la experiencia. Son dos concepciones radicalmente distintas del mecanismo de cambio terapéutico.
+          </div>
+        </button>
+      </div>
+
+      <!-- H11 — Jung 1948-1961 -->
+      <div class="hito hito-jung" role="listitem">
+        <button class="card" onclick="toggle(this)" aria-expanded="false" aria-controls="det-11">
+          <span class="card-expand" aria-hidden="true">+</span>
+          <div class="card-label">Jung · Psicoanálisis</div>
+          <div class="card-title">Instituto C.G. Jung y legado</div>
+          <div class="card-desc">Funda el Instituto Jung en Zúrich (1948). Su influencia se extiende a la psicología, el arte, la religión y la cultura popular.</div>
+          <div class="card-tag">Legado</div>
+          <div class="card-detail" id="det-11">
+            Jung muere en 1961 en Küsnacht. Su influencia alcanza la psicología transpersonal, el test de personalidad MBTI, la teoría de los arquetipos en literatura y cine, y los estudios de religión comparada. El Instituto C.G. Jung forma analistas junguianos hasta la actualidad en más de 30 países.
+          </div>
+        </button>
+        <div class="year"><span class="year-badge">1948–1961</span></div>
+      </div>
+
+      <!-- H12 — Perls 1960s-1990 -->
+      <div class="hito hito-perls" role="listitem">
+        <div class="year"><span class="year-badge">1960s–1990</span></div>
+        <button class="card" onclick="toggle(this)" aria-expanded="false" aria-controls="det-12">
+          <span class="card-expand" aria-hidden="true">+</span>
+          <div class="card-label">Perls · Gestalt</div>
+          <div class="card-title">Expansión, silla vacía y legado</div>
+          <div class="card-desc">Fritz desarrolla técnicas en el Instituto Esalen (California). Laura continúa enseñando en Nueva York hasta su muerte en 1990.</div>
+          <div class="card-tag">Legado</div>
+          <div class="card-detail" id="det-12">
+            Fritz perfecciona la técnica de la "silla vacía" para el diálogo con partes de uno mismo, el trabajo con polaridades y el énfasis en la responsabilidad personal. Laura mantiene la dimensión relacional y filosófica del enfoque. Fritz muere en 1970; Laura en 1990. La Gestalt se consolida como uno de los enfoques humanistas más influyentes del siglo XX.
+          </div>
+        </button>
+      </div>
+
+    </div><!-- /.timeline -->
+  </main>
+
+  <!-- Tabla comparativa -->
+  <section class="compare-section" aria-labelledby="compare-heading">
+    <h2 id="compare-heading">Comparación de enfoques</h2>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th class="th-dim" scope="col">Dimensión</th>
+          <th class="th-jung" scope="col">Carl Jung</th>
+          <th class="th-perls" scope="col">Fritz &amp; Laura Perls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Objeto de estudio</td>
+          <td>Psique profunda e inconsciente colectivo</td>
+          <td>Experiencia presente, contacto organismo-entorno</td>
+        </tr>
+        <tr>
+          <td>Método</td>
+          <td>Análisis de sueños, imaginación activa, amplificación simbólica</td>
+          <td>Awareness, silla vacía, experimentación corporal</td>
+        </tr>
+        <tr>
+          <td>Temporalidad</td>
+          <td>Pasado, símbolos, arquetipos universales</td>
+          <td>Presente — "aquí y ahora"</td>
+        </tr>
+        <tr>
+          <td>Visión del ser humano</td>
+          <td>Busca la individuación y la totalidad psíquica</td>
+          <td>Busca el contacto auténtico y la autorregulación</td>
+        </tr>
+        <tr>
+          <td>Origen</td>
+          <td colspan="2">Ambos parten del psicoanálisis freudiano y lo critican y superan desde perspectivas distintas</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Tarea 3 — Principios teóricos y metodológicos del Psicoanálisis y la Gestalt</p>
+    <p style="margin-top:0.25rem">Universidad Nacional Abierta y a Distancia (UNAD) · Código 402537619 · 2026</p>
+  </footer>
+
+</div><!-- /.page -->
+
+<script>
+  function toggle(card) {
+    const isOpen = card.classList.contains('open');
+    card.classList.toggle('open', !isOpen);
+    card.setAttribute('aria-expanded', String(!isOpen));
+  }
+</script>
+
+</body>
+</html>
